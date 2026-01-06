@@ -90,21 +90,21 @@ async function login(req, res) {
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(401).json({ ok: false, message: 'Invalid credentials' })
 
-    
-    try {
-     
-      await user.update({ last_login: new Date() });
-    } catch (updateErr) {
-      console.warn('Failed to update last_login:', updateErr && updateErr.message)
-    }
-
-    
     let jwtSecret = process.env.JWT_SECRET || process.env.SECRET || null;
     if (!jwtSecret) {
         console.warn('JWT secret not set in environment variables.')
     }
     
     const token = jwt.sign({ sub: user.id, email: user.email }, jwtSecret, { expiresIn: '1h' })
+    
+    try {
+      await user.update({ token: token })
+      await user.update({ last_login: new Date() });
+    } catch (updateErr) {
+      console.warn('Failed to update last_login:', updateErr && updateErr.message)
+    }
+
+    
 
     return res.status(200).json({
       ok: true,
