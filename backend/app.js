@@ -1,12 +1,15 @@
 const express = require('express')
 const db = require('./models')
 const auth_router = require('./modules/auth/auth_routes')
+const note_router = require('./modules/notes/note_routes')
 
 
 const app = express()
 app.use(express.json())
 
 app.use('/api/auth', auth_router)
+
+app.use('/api/notes', note_router)
 
 const startserver = async()=>{
 

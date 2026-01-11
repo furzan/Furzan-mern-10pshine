@@ -9,5 +9,7 @@ db.sequelize = sequelize;
 
 db.User = require('./user_model')(sequelize, DataTypes)
 
+db.Note = require('./note_model')(sequelize, DataTypes)
+
 
 module.exports = db
