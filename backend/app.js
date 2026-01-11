@@ -1,10 +1,19 @@
 const express = require('express')
+const cors = require('cors');
 const db = require('./models')
 const auth_router = require('./modules/auth/auth_routes')
 const note_router = require('./modules/notes/note_routes')
 
 
 const app = express()
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true 
+}));
+
 app.use(express.json())
 
 app.use('/api/auth', auth_router)
