@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NoteCard from '../components/NoteCard';
 import '../styles/Dashboard.css';
+import { create_note } from '../services/app_Apis';
 
 interface Note {
   id: number;
@@ -155,7 +156,7 @@ const Dashboard: React.FC = () => {
               </div>
               <span className="template-name">Blank note</span>
             </button>
-            <button className="template-card" onClick={handleCreateNote}>
+            {/* <button className="template-card" onClick={handleCreateNote}>
               <div className="template-preview meeting">
                 <div className="preview-line"></div>
                 <div className="preview-line short"></div>
@@ -170,7 +171,7 @@ const Dashboard: React.FC = () => {
                 <div className="preview-checkbox"></div>
               </div>
               <span className="template-name">To-do list</span>
-            </button>
+            </button> */}
           </div>
         </section>
 
