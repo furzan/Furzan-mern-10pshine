@@ -95,7 +95,7 @@ async function login(req, res) {
         console.warn('JWT secret not set in environment variables.')
     }
     
-    const token = jwt.sign({ sub: user.id, email: user.email }, jwtSecret, { expiresIn: '1h' })
+    const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn: '1h' })
     
     try {
       await user.update({ token: token })
