@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/NoteCard.css';
 
 interface Note {
   id: number;
+  user_id: number;
   title: string;
   content: string;
-  lastModified: string;
-  color: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface NoteCardProps {
@@ -16,22 +17,49 @@ interface NoteCardProps {
 }
 
 const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick }) => {
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) {
-      return 'Today';
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
-    } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-  };
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  const timeStr = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit', 
+    hour12: true,
+  });
+
+  if (diffDays === 0) {
+    return `Today at ${timeStr}`;
+  } else if (diffDays === 1) {
+    return `Yesterday at ${timeStr}`;
+  } else if (diffDays < 7) {
+    return `${diffDays} days ago, ${timeStr}`;
+  } else {
+    const dateStr = date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+    });
+    return `${dateStr}, ${timeStr}`;
+  }
+};
+
+
+  const [bgColor] = useState(() => {
+    const colors = [
+      '#FFE066', 
+      '#FF8A65', 
+      '#FFB703', 
+      '#FFD166', 
+      '#FF6F61', 
+      '#FFB4A2', 
+      '#C7F000', 
+      '#FFC2D1'
+    ];
+
+    return colors[Math.floor(Math.random() * colors.length)];
+  });
 
   const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.stopPropagation();
@@ -43,7 +71,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick }) => {
     <div 
       className={`note-card ${viewMode}`}
       onClick={onClick}
-      style={{ backgroundColor: note.color }}
+      style={{ backgroundColor: bgColor }}
     >
       {viewMode === 'grid' ? (
         <>
@@ -57,7 +85,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick }) => {
           </div>
           <p className="note-preview">{note.content}</p>
           <div className="note-footer">
-            <span className="note-date">{formatDate(note.lastModified)}</span>
+            <span className="note-date">{formatDate(note.updatedAt)}</span>
           </div>
         </>
       ) : (
@@ -72,7 +100,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick }) => {
             <p className="note-preview">{note.content}</p>
           </div>
           <div className="note-list-meta">
-            <span className="note-date">{formatDate(note.lastModified)}</span>
+            <span className="note-date">{formatDate(note.updatedAt)}</span>
             <button className="note-menu-btn" onClick={handleMenuClick}>
               <svg viewBox="0 0 24 24" width="20" height="20">
                 <path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>

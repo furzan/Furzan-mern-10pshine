@@ -21,7 +21,7 @@ export default function SignIn() {
       });
 
       if (response.ok == true) {
-        console.log("SignIn success", response);
+        sessionStorage.setItem("token", response.token);
         navigate("/dashboard");
       }
     } catch (error) {

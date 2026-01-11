@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NoteCard from '../components/NoteCard';
 import '../styles/Dashboard.css';
-import { create_note } from '../services/app_Apis';
+import { get_note } from '../services/app_Apis';
 
 interface Note {
   id: number;
@@ -17,58 +17,19 @@ const Dashboard: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const fetchNotes = async (): Promise<void> => {
-    
-    const mockNotes: Note[] = [
-      {
-        id: 1,
-        title: 'Meeting Notes - Q1 Planning',
-        content: 'Discussed project timelines and resource allocation...',
-        lastModified: '2025-01-07T10:30:00',
-        color: '#fff4e6'
-      },
-      {
-        id: 2,
-        title: 'Project Ideas',
-        content: 'Brainstorming session for new features...',
-        lastModified: '2025-01-06T14:20:00',
-        color: '#e3f2fd'
-      },
-      {
-        id: 3,
-        title: 'Research Notes',
-        content: 'Key findings from user interviews and surveys...',
-        lastModified: '2025-01-05T09:15:00',
-        color: '#f3e5f5'
-      },
-      {
-        id: 4,
-        title: 'To-Do List',
-        content: 'Tasks for this week: Review PR, Update documentation...',
-        lastModified: '2025-01-04T16:45:00',
-        color: '#e8f5e9'
-      },
-      {
-        id: 5,
-        title: 'Learning Resources',
-        content: 'Collection of tutorials and articles on React...',
-        lastModified: '2025-01-03T11:00:00',
-        color: '#fff9c4'
-      },
-      {
-        id: 6,
-        title: 'Bug Tracker',
-        content: 'List of known issues and their priority levels...',
-        lastModified: '2025-01-02T13:30:00',
-        color: '#ffebee'
-      }
-    ];
-    setNotes(mockNotes);
-  };
-
-  // Fetch notes from backend (placed after fetchNotes declaration)
+  
   useEffect(() => {
+    const fetchNotes = async () => {
+        try {
+            console.log('Fetching notes...');
+            const data = await get_note(); 
+            setNotes(data.notes);               
+        } catch (error) {
+            console.error("Failed to fetch notes:", error);
+        }
+    };
+
+    // 2. Call the function
     fetchNotes();
   }, []);
 
