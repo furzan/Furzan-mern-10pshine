@@ -10,4 +10,9 @@ interface Credentials {
     password: string;
 }
 
-export type { UserData, Credentials };
+interface NoteData {
+    title: string;
+    content: string;
+}
+
+export type { UserData, Credentials, NoteData };

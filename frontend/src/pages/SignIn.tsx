@@ -22,7 +22,7 @@ export default function SignIn() {
 
       if (response.ok == true) {
         console.log("SignIn success", response);
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("SignIn error:", error);
