@@ -49,24 +49,24 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick, onDelete }
 
   const [bgColor] = useState(() => {
     const colors = [
-      '#FFE066', 
-      '#FF8A65', 
-      '#FFB703', 
-      '#FFD166', 
-      '#FF6F61', 
-      '#FFB4A2', 
-      '#C7F000', 
-      '#FFC2D1'
-    ];
+        '#FFF1B8', // soft warm yellow
+        '#FFD6C9', // light peach
+        '#FFE3A3', // pastel gold
+        '#FFF0C2', // creamy yellow
+        '#FFD1CC', // light coral
+        '#FFE4D9', // warm blush
+        '#F3F8C2', // soft lime-warm
+        '#FFE0EA'  // light warm pink
+      ];
+
 
     return colors[Math.floor(Math.random() * colors.length)];
   });
 
-  // const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
-  //   e.stopPropagation();
-  //   // TODO: Open menu options (delete, duplicate, etc.)
-  //   console.log('Menu clicked for note:', note.id);
-  // };
+  const stripHtml = (html: string): string => {
+    if (!html) return '';
+    return html.replace(/<[^>]*>?/gm, '');
+  };
 
   return (
     <div 
@@ -84,7 +84,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick, onDelete }
               </svg>
             </button>
           </div>
-          <p className="note-preview">{note.content}</p>
+          <p className="note-preview">{stripHtml(note.content)}</p>
           <div className="note-footer">
             <span className="note-date">{formatDate(note.updatedAt)}</span>
           </div>
@@ -98,7 +98,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick, onDelete }
           </div>
           <div className="note-list-content">
             <h3 className="note-title">{note.title}</h3>
-            <p className="note-preview">{note.content}</p>
+            <p className="note-preview">{stripHtml(note.content)}</p>
           </div>
           <div className="note-list-meta">
             <span className="note-date">{formatDate(note.updatedAt)}</span>

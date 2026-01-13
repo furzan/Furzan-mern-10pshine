@@ -3,7 +3,7 @@ import NoteCard from '../components/NoteCard';
 import NoteEditor from '../components/NoteEditor';
 import DeleteConfirmModal from '../components/DeleteConfirmModal'
 import '../styles/Dashboard.css';
-import { get_note } from '../services/app_Apis';
+import { get_note, delete_note, update_note, create_note } from '../services/app_Apis';
 
 interface Note {
   id: number;
@@ -45,10 +45,13 @@ const Dashboard: React.FC = () => {
 
   const handleConfirmDelete = async (): Promise<void> => {
     if (noteToDelete) {
-      // TODO: Call your delete API
-      // await deleteNote(noteToDelete);
+      try{
+        await delete_note(noteToDelete);
+      }
+      catch (error) {
+        console.error('Error deleting note:', error);
+      }
       
-      // Remove from state
       setNotes(prevNotes => prevNotes.filter(note => note.id !== noteToDelete));
       
       setIsDeleteModalOpen(false);
@@ -71,14 +74,16 @@ const Dashboard: React.FC = () => {
     setCurrentNoteId(undefined);
   };
 
-  const handleNoteSave = (savedNote: Partial<Note>): void => {
+  const handleNoteSave = async (savedNote: Partial<Note>): Promise<void> => {
     if (currentNoteId) {
-      // Update existing note
       setNotes(prevNotes =>
         prevNotes.map(note =>
           note.id === currentNoteId ? { ...note, ...savedNote } as Note : note
         )
       );
+
+      await update_note({title: savedNote?.title || '', content: savedNote?.content || ''}, currentNoteId);
+
     } else {
       // Add new note
       const newNote: Note = {
@@ -89,6 +94,9 @@ const Dashboard: React.FC = () => {
         color: savedNote.color || '#ffffff'
       };
       setNotes(prevNotes => [newNote, ...prevNotes]);
+
+      await create_note({title: newNote.title, content: newNote.content});
+
     }
     setIsEditorOpen(false);
     setCurrentNoteId(undefined);
@@ -225,6 +233,7 @@ const Dashboard: React.FC = () => {
           noteId={currentNoteId}
           onClose={handleEditorClose}
           onSave={handleNoteSave}
+          noteData={notes.find(n => n.id === currentNoteId)}
         />
       )}
 

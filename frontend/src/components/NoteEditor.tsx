@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import JoditEditor from 'jodit-react';
+import type { NoteData } from '../services/models'
 import '../styles/NoteEditor.css';
 
 interface Note {
@@ -14,9 +15,10 @@ interface NoteEditorProps {
   noteId?: number;
   onClose: () => void;
   onSave: (note: Partial<Note>) => void;
+  noteData?: NoteData;
 }
 
-const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave }) => {
+const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteData }) => {
   const editor = useRef(null);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
@@ -24,13 +26,14 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave }) => {
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
   // Fixed warm vibrant color
-  const noteColor = '#fff4e6';
+  const noteColor = '#ffe7c9';
 
   // Jodit editor configuration
   const config = useMemo(
     () => ({
       readonly: false,
-      placeholder: 'Start typing your notes...',
+      // Hide placeholder when opening an existing note
+      placeholder: noteId || noteData ? '' : 'Start typing your notes...',
       minHeight: 500,
       toolbar: true,
       spellcheck: true,
@@ -80,30 +83,18 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave }) => {
         'redo'
       ]
     }),
-    []
+    [noteId, noteData]
   );
 
-  // Fetch note data if editing existing note
-  const fetchNote = async (id: number): Promise<void> => {
-    
-    setTimeout(() => {
-      const mockNote: Note = {
-        id,
-        title: 'Sample Note Title',
-        content: '<p>This is sample content for the note editor.</p>',
-        lastModified: new Date().toISOString(),
-        color: noteColor
-      };
-      setTitle(mockNote.title);
-      setContent(mockNote.content);
-    }, 300);
-  };
 
+  // If caller passed `noteData` (existing note), initialize editor from it
   useEffect(() => {
-    if (noteId) {
-      fetchNote(noteId);
+    if (noteData) {
+      if (noteData.title) setTitle(noteData.title);
+      if (noteData.content) setContent(noteData.content);
+      setHasChanges(false);
     }
-  }, [noteId]);
+  }, [noteData]);
 
 
   const handleSave = async (): Promise<void> => {
@@ -114,6 +105,49 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave }) => {
 
     setIsSaving(true);
 
+    // TODO: Replace with actual API call
+    // try {
+    //   const noteData = {
+    //     id: noteId,
+    //     title: title.trim(),
+    //     content,
+    //     color: noteColor,
+    //     lastModified: new Date().toISOString()
+    //   };
+    //
+    //   const url = noteId ? `/api/notes/${noteId}` : '/api/notes';
+    //   const method = noteId ? 'PUT' : 'POST';
+    //
+    //   const response = await fetch(url, {
+    //     method,
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(noteData)
+    //   });
+    //
+    //   if (response.ok) {
+    //     const savedNote = await response.json();
+    //     onSave(savedNote);
+    //   }
+    // } catch (error) {
+    //   console.error('Error saving note:', error);
+    //   alert('Failed to save note. Please try again.');
+    // } finally {
+    //   setIsSaving(false);
+    // }
+
+    // Mock save for demonstration
+    setTimeout(() => {
+      const savedNote: Partial<Note> = {
+        id: noteId || Date.now(),
+        title: title.trim(),
+        content,
+        color: noteColor,
+        lastModified: new Date().toISOString()
+      };
+      onSave(savedNote);
+      setIsSaving(false);
+      setHasChanges(false);
+    }, 500);
   };
 
   const handleCancel = (): void => {
