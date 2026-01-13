@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import NoteCard from '../components/NoteCard';
 import NoteEditor from '../components/NoteEditor';
 import DeleteConfirmModal from '../components/DeleteConfirmModal'
+import { useNavigate } from "react-router-dom";
 import '../styles/Dashboard.css';
 import { get_note, delete_note, update_note, create_note } from '../services/app_Apis';
 
@@ -23,6 +24,8 @@ const Dashboard: React.FC = () => {
   const [currentNoteId, setCurrentNoteId] = useState<number | undefined>(undefined);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
+
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchNotes = async () => {
@@ -102,6 +105,15 @@ const Dashboard: React.FC = () => {
     setCurrentNoteId(undefined);
   };
 
+  const handleLogout = async (): Promise<void> => {
+    try{
+        navigate("/signin");
+    }
+    catch{
+      console.log('error logging out')
+    }
+  }
+
   const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     note.content.toLowerCase().includes(searchQuery.toLowerCase())
@@ -112,11 +124,24 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <header className="dashboard-header">
         <div className="header-left">
-          <div className="menu-icon">
-            <span></span>
-            <span></span>
-            <span></span>
+         
+          <div className="menu-icon" onClick={handleLogout} >
+            <svg 
+              viewBox="0 0 24 24" 
+              width="20" 
+              height="20" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
           </div>
+          
           <div className="logo">
             <svg viewBox="0 0 24 24" width="40" height="40">
               <path fill="#FFC107" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/>
