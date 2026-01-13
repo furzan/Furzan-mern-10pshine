@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NoteCard from '../components/NoteCard';
+import NoteEditor from '../components/NoteEditor';
+import DeleteConfirmModal from '../components/DeleteConfirmModal'
 import '../styles/Dashboard.css';
 import { get_note } from '../services/app_Apis';
 
@@ -17,6 +19,10 @@ const Dashboard: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
+  const [currentNoteId, setCurrentNoteId] = useState<number | undefined>(undefined);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
   
   useEffect(() => {
     const fetchNotes = async () => {
@@ -29,18 +35,63 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    // 2. Call the function
     fetchNotes();
   }, []);
 
+  const handleDeleteClick = (noteId: number): void => {
+    setNoteToDelete(noteId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (noteToDelete) {
+      // TODO: Call your delete API
+      // await deleteNote(noteToDelete);
+      
+      // Remove from state
+      setNotes(prevNotes => prevNotes.filter(note => note.id !== noteToDelete));
+      
+      setIsDeleteModalOpen(false);
+      setNoteToDelete(null);
+    }
+  };
+
   const handleCreateNote = (): void => {
-    // TODO: Navigate to note editor
-    console.log('Creating new note...');
+    setCurrentNoteId(undefined);
+    setIsEditorOpen(true);
   };
 
   const handleNoteClick = (noteId: number): void => {
-    // TODO: Navigate to note editor with noteId
-    console.log('Opening note:', noteId);
+    setCurrentNoteId(noteId);
+    setIsEditorOpen(true);
+  };
+
+  const handleEditorClose = (): void => {
+    setIsEditorOpen(false);
+    setCurrentNoteId(undefined);
+  };
+
+  const handleNoteSave = (savedNote: Partial<Note>): void => {
+    if (currentNoteId) {
+      // Update existing note
+      setNotes(prevNotes =>
+        prevNotes.map(note =>
+          note.id === currentNoteId ? { ...note, ...savedNote } as Note : note
+        )
+      );
+    } else {
+      // Add new note
+      const newNote: Note = {
+        id: savedNote.id || Date.now(),
+        title: savedNote.title || 'Untitled',
+        content: savedNote.content || '',
+        lastModified: savedNote.lastModified || new Date().toISOString(),
+        color: savedNote.color || '#ffffff'
+      };
+      setNotes(prevNotes => [newNote, ...prevNotes]);
+    }
+    setIsEditorOpen(false);
+    setCurrentNoteId(undefined);
   };
 
   const filteredNotes = notes.filter(note =>
@@ -160,12 +211,31 @@ const Dashboard: React.FC = () => {
                   note={note}
                   viewMode={viewMode}
                   onClick={() => handleNoteClick(note.id)}
+                  onDelete={() => handleDeleteClick(note.id)} 
                 />
               ))}
             </div>
           )}
         </section>
       </main>
+
+      {/* Note Editor Modal */}
+      {isEditorOpen && (
+        <NoteEditor
+          noteId={currentNoteId}
+          onClose={handleEditorClose}
+          onSave={handleNoteSave}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+        <DeleteConfirmModal
+          isOpen={isDeleteModalOpen}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setIsDeleteModalOpen(false)}
+          noteTitle={notes.find(n => n.id === noteToDelete)?.title}
+        />
+
     </div>
   );
 };
