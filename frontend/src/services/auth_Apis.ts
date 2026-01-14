@@ -30,7 +30,7 @@ export async function signin(data: Credentials) {
 
 export async function logout(email: string) {
   try {
-    const response = await axiosInstance.delete('/auth/logout', { data: { email } });
+    const response = await axiosInstance.post('/auth/logout', { data: { email } });
     console.log('logged out successfully:', response.data);
     return response.data;
 
@@ -39,4 +39,18 @@ export async function logout(email: string) {
     throw error;
   }
 }
+
+
+export async function verifyToken() {
+  try {
+    const response = await axiosInstance.get('/auth/verifyToken');
+    console.log('verified Token successfully:', response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('Error verifing Token:', error);
+    throw error;
+  }
+}
+
 
