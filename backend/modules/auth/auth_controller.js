@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const db = require('../../models')
 const jwt = require('jsonwebtoken')
+const sendEmail = require('../../utils/send_email');
 const crypto = require('crypto')
 
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -60,6 +61,7 @@ async function register(req, res) {
     }
 
     console.error('Register error:', err);
+
     return res.status(500).json({ ok: false, message: 'Internal server error' })
   }
 }
@@ -126,8 +128,149 @@ async function login(req, res) {
 }
 
 
+//Logout existing user
+//Expects: { email }
+
+async function logout(req, res) {
+  try {
+    const { email } = req.body || {};
+
+    const errors = [];
+    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email)) errors.push('A valid email is required')
+
+    if (errors.length) return res.status(400).json({ ok: false, errors })
+
+    const normalizedEmail = email.trim().toLowerCase()
+
+    const user = await db.User.findOne({ 
+        where: { email: normalizedEmail } 
+    })
+
+    if (!user) return res.status(401).json({ ok: false, message: 'User not found' })
+    
+    try {
+      await user.update({ token: null })
+    } catch (updateErr) {
+      console.warn('Error logging out:', updateErr && updateErr.message)
+    }
+
+    return res.status(200).json({
+      ok: true,
+      message: 'Logged out',
+    })
+
+  } catch (err) {
+    console.error('Logout error:', err);
+    return res.status(500).json({ ok: false, message: 'Internal server error' })
+  }
+}
+
+// Request password reset
+// Expects: { email } 
+
+async function requestPasswordReset(req, res) {
+  try {
+    const { email } = req.body || {};
+    const errors = [];
+    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email)) errors.push('A valid email is required');
+    if (errors.length) return res.status(400).json({ ok: false, errors });
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await db.User.findOne({ where: { email: normalizedEmail } });
+
+    // Security: Always return success even if user doesn't exist
+    if (!user) {
+      return res.status(200).json({ ok: true, message: 'If that email exists, a reset link has been sent' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // 1. Save token to DB
+    await user.update({ 
+      reset_token: token, 
+      reset_token_expires: expires 
+    });
+
+    // 2. Construct the link
+    const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetLink = `${frontend.replace(/\/$/, '')}/reset-password?email=${encodeURIComponent(normalizedEmail)}&token=${token}`;
+
+    // 3. Send the email
+    try {
+      await sendEmail({
+        to: normalizedEmail,
+        subject: 'Password Reset Request',
+        html: `
+          <div style="font-family: sans-serif; line-height: 1.5;">
+            <h2>Password Reset</h2>
+            <p>You requested a password reset for your Notes App account.</p>
+            <p>Click the button below to set a new password. This link is valid for 1 hour.</p>
+            <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #FFB347; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
+            <p>If the button doesn't work, copy and paste this link:</p>
+            <p>${resetLink}</p>
+          </div>
+        `
+      });
+    } catch (mailErr) {
+      // 4. Rollback: If email fails, clear the token from DB
+      await user.update({ reset_token: null, reset_token_expires: null });
+      console.error('Email send failure:', mailErr);
+      return res.status(500).json({ ok: false, message: 'Failed to send reset email. Please try again later.' });
+    }
+
+    return res.status(200).json({ ok: true, message: 'If that email exists, a reset link has been sent' });
+
+  } catch (err) {
+    console.error('RequestPasswordReset error:', err);
+    return res.status(500).json({ ok: false, message: 'Internal server error' });
+  }
+}
+
+
+// Reset password
+// Expects: { email, token, new_password }
+async function resetPassword(req, res) {
+  try {
+    const { email, token, new_password } = req.body || {};
+    const errors = [];
+    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email)) errors.push('A valid email is required')
+    if (!token || typeof token !== 'string' || !token.length) errors.push('Reset token is required')
+    if (!new_password || typeof new_password !== 'string' || new_password.length < 8) errors.push('Password is required and should be at least 8 characters')
+    if (errors.length) return res.status(400).json({ ok: false, errors })
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await db.User.findOne({ where: { email: normalizedEmail } });
+    if (!user) return res.status(400).json({ ok: false, message: 'Invalid token or email' })
+
+    if (!user.reset_token || user.reset_token !== token) return res.status(400).json({ ok: false, message: 'Invalid token or email' })
+    if (!user.reset_token_expires || new Date(user.reset_token_expires) < new Date()) return res.status(400).json({ ok: false, message: 'Reset token expired' })
+
+    const saltRounds = 10;
+    const password_hash = await bcrypt.hash(new_password, saltRounds);
+
+    try {
+      await user.update({ password_hash, reset_token: null, reset_token_expires: null });
+    } catch (updateErr) {
+      console.warn('Failed to update password:', updateErr && updateErr.message)
+      return res.status(500).json({ ok: false, message: 'Failed to reset password' })
+    }
+
+    return res.status(200).json({ ok: true, message: 'Password has been reset' })
+  } catch (err) {
+    console.error('ResetPassword error:', err);
+    return res.status(500).json({ ok: false, message: 'Internal server error' })
+  }
+}
+
+
+
+
 
 module.exports = {
-    register,
-    login
+  register,
+  login,
+  logout,
+  requestPasswordReset,
+  resetPassword
 }

@@ -29,7 +29,16 @@ module.exports = (sequelize, DataTypes) => {
         token:{
             type: DataTypes.STRING,
             defaultValue: ''
+        },
+        reset_token: {
+            type: DataTypes.STRING,
+            defaultValue: ''
+        },
+        reset_token_expires: {
+            type: DataTypes.DATE,
+            defaultValue: null
         }
+
     }, {
         timestamps: true,
         underscored: true,
