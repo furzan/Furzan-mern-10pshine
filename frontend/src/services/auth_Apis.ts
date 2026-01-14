@@ -28,3 +28,15 @@ export async function signin(data: Credentials) {
 }
 
 
+export async function logout(email: string) {
+  try {
+    const response = await axiosInstance.delete('/auth/logout', { data: { email } });
+    console.log('logged out successfully:', response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('Error logging out:', error);
+    throw error;
+  }
+}
+

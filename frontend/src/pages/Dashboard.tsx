@@ -5,6 +5,7 @@ import DeleteConfirmModal from '../components/DeleteConfirmModal'
 import { useNavigate } from "react-router-dom";
 import '../styles/Dashboard.css';
 import { get_note, delete_note, update_note, create_note } from '../services/app_Apis';
+import { logout } from '../services/auth_Apis';
 
 interface Note {
   id: number;
@@ -25,6 +26,19 @@ const Dashboard: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
 
+  const storeduserData = sessionStorage.getItem('user');
+  let userData = {
+        id: 0,
+        f_name: '',
+        l_name: '',
+        email: '',
+        created_at: '',
+         
+  };
+  if (storeduserData) {
+    userData = JSON.parse(storeduserData);
+  }
+
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -40,6 +54,15 @@ const Dashboard: React.FC = () => {
 
     fetchNotes();
   }, []);
+
+  const handleLogout = async (): Promise<void> => {
+    try {
+      await logout(userData.email);
+      navigate("/signin");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }
 
   const handleDeleteClick = (noteId: number): void => {
     setNoteToDelete(noteId);
@@ -105,14 +128,7 @@ const Dashboard: React.FC = () => {
     setCurrentNoteId(undefined);
   };
 
-  const handleLogout = async (): Promise<void> => {
-    try{
-        navigate("/signin");
-    }
-    catch{
-      console.log('error logging out')
-    }
-  }
+  
 
   const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

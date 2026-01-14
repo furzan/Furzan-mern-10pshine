@@ -22,6 +22,7 @@ export default function SignIn() {
 
       if (response.ok == true) {
         sessionStorage.setItem("token", response.token);
+        sessionStorage.setItem('user', JSON.stringify(response.user));
         navigate("/dashboard");
       }
     } catch (error) {
