@@ -21,8 +21,9 @@ export default function SignIn() {
       });
 
       if (response.ok == true) {
-        console.log("SignIn success", response);
-        navigate("/");
+        sessionStorage.setItem("token", response.token);
+        sessionStorage.setItem('user', JSON.stringify(response.user));
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("SignIn error:", error);
