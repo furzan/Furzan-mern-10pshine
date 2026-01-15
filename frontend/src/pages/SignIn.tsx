@@ -9,7 +9,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
@@ -68,7 +68,7 @@ export default function SignIn() {
             <p className="welcome-subtitle">Sign in to continue to your notes</p>
           </div>
 
-          <div className="signin-form">
+          <form onSubmit={handleSubmit} className="signin-form">
             <div className="form-group">
               <label htmlFor="email" className="form-label">Email</label>
               <input
@@ -101,13 +101,13 @@ export default function SignIn() {
             </div>
 
             <button 
-              onClick={handleSubmit}
+              type="submit"
               className="submit-button"
               disabled={loading}
             >
               {loading ? "Signing in..." : "Sign In"}
             </button>
-          </div>
+          </form>
 
           <div className="signup-section">
             <p className="signup-text">

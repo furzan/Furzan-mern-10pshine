@@ -15,7 +15,7 @@ export default function SignUp() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const validate = () => {
@@ -30,7 +30,7 @@ export default function SignUp() {
     return e;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const v = validate();
@@ -91,7 +91,7 @@ export default function SignUp() {
             <p className="welcome-subtitle">Get started with your free account</p>
           </div>
 
-          <div className="signup-form">
+          <form onSubmit = {handleSubmit} className="signup-form">
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="firstName" className="form-label">First name</label>
@@ -155,13 +155,13 @@ export default function SignUp() {
             </div>
 
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="submit-button"
               disabled={loading}
             >
               {loading ? "Creating account..." : "Sign Up"}
             </button>
-          </div>
+          </form>
 
           <div className="signin-section">
             <p className="signin-text">

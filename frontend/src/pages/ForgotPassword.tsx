@@ -4,25 +4,29 @@ import "../styles/ForgotPassword.css";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+type Errors = Partial<
+  Record<"email" | "token" | "newPassword" | "confirmPassword", string>
+>;
+
 export default function ForgotPassword() {
   const [step, setStep] = useState(1); // 1: email, 2: reset
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
 
   const validateEmail = () => {
-    const e = {};
+    const e: Errors = {};
     if (!email.trim()) e.email = "Email is required.";
     else if (!emailRegex.test(email)) e.email = "Enter a valid email.";
     return e;
   };
 
   const validateReset = () => {
-    const e = {};
+    const e: Errors = {};
     if (!token.trim()) e.token = "Token is required.";
     if (!newPassword) e.newPassword = "New password is required.";
     else if (newPassword.length < 6) e.newPassword = "Password must be at least 6 characters.";
@@ -31,7 +35,7 @@ export default function ForgotPassword() {
     return e;
   };
 
-  const handleEmailSubmit = async (e) => {
+  const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const v = validateEmail();
     setErrors(v);
@@ -54,7 +58,7 @@ export default function ForgotPassword() {
     }
   };
 
-  const handleResetSubmit = async (e) => {
+  const handleResetSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const v = validateReset();
     setErrors(v);
@@ -128,7 +132,7 @@ export default function ForgotPassword() {
                 <p className="welcome-subtitle">Enter your email and we'll send you a reset token</p>
               </div>
 
-              <div className="forgot-form">
+              <form onSubmit={handleEmailSubmit} className="forgot-form">
                 <div className="form-group">
                   <label htmlFor="email" className="form-label">Email</label>
                   <input
@@ -137,7 +141,7 @@ export default function ForgotPassword() {
                     className={`form-input ${errors.email ? 'error' : ''}`}
                     placeholder="you@example.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                   />
                   {errors.email && (
                     <span className="error-message">{errors.email}</span>
@@ -145,13 +149,13 @@ export default function ForgotPassword() {
                 </div>
 
                 <button
-                  onClick={handleEmailSubmit}
+                  type="submit"
                   className="submit-button"
                   disabled={loading}
                 >
                   {loading ? "Sending..." : "Send Reset Token"}
                 </button>
-              </div>
+              </form>
             </>
           ) : (
             <>
@@ -162,7 +166,7 @@ export default function ForgotPassword() {
                 </p>
               </div>
 
-              <div className="forgot-form">
+              <form onSubmit={handleResetSubmit} className="forgot-form">
                 <div className="form-group">
                   <div className="token-header">
                     <label htmlFor="token" className="form-label">Reset Token</label>
@@ -181,7 +185,7 @@ export default function ForgotPassword() {
                     className={`form-input token-input ${errors.token ? 'error' : ''}`}
                     placeholder="Enter 6-digit token"
                     value={token}
-                    onChange={(e) => setToken(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToken(e.target.value)}
                     maxLength={6}
                   />
                   {errors.token && (
@@ -197,7 +201,7 @@ export default function ForgotPassword() {
                     className={`form-input ${errors.newPassword ? 'error' : ''}`}
                     placeholder="••••••••"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value)}
                   />
                   {errors.newPassword && (
                     <span className="error-message">{errors.newPassword}</span>
@@ -212,7 +216,7 @@ export default function ForgotPassword() {
                     className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
                     placeholder="••••••••"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
                   />
                   {errors.confirmPassword && (
                     <span className="error-message">{errors.confirmPassword}</span>
@@ -220,13 +224,13 @@ export default function ForgotPassword() {
                 </div>
 
                 <button
-                  onClick={handleResetSubmit}
+                  type="submit"
                   className="submit-button"
                   disabled={loading}
                 >
                   {loading ? "Resetting..." : "Reset Password"}
                 </button>
-              </div>
+              </form>
             </>
           )}
 
