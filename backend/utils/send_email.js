@@ -1,22 +1,31 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, html }) => {
+  
+  
   const transporter = nodemailer.createTransport({
-    service: 'gmail', // Use 'gmail' or your preferred SMTP provider
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Use true for port 465, false for port 587
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // Use an App Password if using Gmail
+      pass: process.env.EMAIL_PASS,
     },
   });
 
-  const mailOptions = {
-    from: `"Notes App Support" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    html,
-  };
+  // Send an email using async/await
+  (async () => {
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: to,
+      subject: subject,
+      html: html, 
+    });
 
-  return transporter.sendMail(mailOptions);
+    console.log("Message sent:", info.messageId);
+  })();
+
+
 };
 
 module.exports = sendEmail;

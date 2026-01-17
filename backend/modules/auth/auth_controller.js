@@ -183,7 +183,7 @@ async function requestPasswordReset(req, res) {
       return res.status(200).json({ ok: true, message: 'If that email exists, a reset link has been sent' });
     }
 
-    const token = crypto.randomBytes(32).toString('hex');
+    const token = crypto.randomInt(100000, 1000000).toString();
     const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     // 1. Save token to DB
@@ -194,7 +194,7 @@ async function requestPasswordReset(req, res) {
 
     // 2. Construct the link
     const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const resetLink = `${frontend.replace(/\/$/, '')}/reset-password?email=${encodeURIComponent(normalizedEmail)}&token=${token}`;
+    const resetLink = `${frontend.replace(/\/$/, '')}/forgotpass/${email}`;
 
     // 3. Send the email
     try {
@@ -202,14 +202,57 @@ async function requestPasswordReset(req, res) {
         to: normalizedEmail,
         subject: 'Password Reset Request',
         html: `
-          <div style="font-family: sans-serif; line-height: 1.5;">
-            <h2>Password Reset</h2>
-            <p>You requested a password reset for your Notes App account.</p>
-            <p>Click the button below to set a new password. This link is valid for 1 hour.</p>
-            <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #FFB347; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
-            <p>If the button doesn't work, copy and paste this link:</p>
-            <p>${resetLink}</p>
-          </div>
+              <div style="background-color: #f9f9f9; padding: 40px 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333333; line-height: 1.6;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center">
+                      <div style="max-width: 500px; background-color: #ffffff; border: 1px solid #eeeeee; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                        
+                        <div style="background-color: #FFB347; padding: 20px; text-align: center;">
+                          <span style="font-size: 24px; font-weight: bold; color: white;">Notes App</span>
+                        </div>
+
+                        <div style="padding: 40px 30px; text-align: center;">
+                          <h2 style="margin-top: 0; color: #1a1a1a; font-size: 22px;">Password Reset</h2>
+                          <p style="color: #666666; font-size: 16px; margin-bottom: 25px;">
+                            You requested a password reset. Click the button below to continue:
+                          </p>
+                          
+                          <div style="margin-bottom: 30px;">
+                            <a href="${resetLink}" 
+                              style="background-color: #FFB347; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+                              Reset Password
+                            </a>
+                          </div>
+
+                          <div style="border-top: 1px solid #eeeeee; padding-top: 30px; margin-top: 30px;">
+                            <p style="color: #666666; font-size: 14px; margin-bottom: 10px;">Reset token:</p>
+                            <div style="background-color: #fff9f0; border: 2px dashed #FFB347; padding: 15px 20px; border-radius: 8px; display: inline-block;">
+                              <span style="font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: bold; color: #d48806; letter-spacing: 4px;">
+                                ${token}
+                              </span>
+                            </div>
+                          </div>
+
+                          <p style="color: #999999; font-size: 13px; margin-top: 30px;">
+                            This token and link are valid for <strong>1 hour</strong>.
+                          </p>
+                        </div>
+
+                        <div style="padding: 20px 30px; background-color: #fafafa; border-top: 1px solid #eeeeee; text-align: left;">
+                          <p style="margin: 0; font-size: 12px; color: #999999; word-break: break-all;">
+                            Direct Link: <a href="${resetLink}" style="color: #FFB347; text-decoration: none;">${resetLink}</a>
+                          </p>
+                        </div>
+                      </div>
+
+                      <p style="margin-top: 20px; font-size: 12px; color: #bbbbbb; text-align: center;">
+                        Sent with ❤️ by the Notes App Team
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
         `
       });
     } catch (mailErr) {
