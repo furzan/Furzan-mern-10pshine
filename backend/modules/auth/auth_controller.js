@@ -306,7 +306,20 @@ async function resetPassword(req, res) {
   }
 }
 
-
+// {expects req.user after middleware has processed the jwt token}
+const checkUserAuth = (req, res) => {
+  if (req.user) {
+    return res.status(200).json({ 
+      ok: true, 
+      message: 'User is authenticated',
+    });
+  } else {
+    return res.status(401).json({ 
+      status: 'error', 
+      message: 'Unauthorized: No user found' 
+    });
+  }
+};
 
 
 
@@ -315,5 +328,6 @@ module.exports = {
   login,
   logout,
   requestPasswordReset,
-  resetPassword
+  resetPassword,
+  checkUserAuth
 }
