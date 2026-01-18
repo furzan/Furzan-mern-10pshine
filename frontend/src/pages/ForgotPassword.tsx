@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { forgotpassword, resetpassword } from '../services/auth_Apis'
 import "../styles/ForgotPassword.css";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -17,6 +18,18 @@ export default function ForgotPassword() {
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const { email_param } = useParams();
+
+  useEffect(() => {
+    if (email_param ) {
+      setEmail(email_param)
+      setStep(2);
+    }
+    else if (sessionStorage.getItem('forgotpass_email')) {
+      setEmail(sessionStorage.getItem('forgotpass_email') || '')
+      setStep(2);
+    }
+  }, [email_param]);
 
   const validateEmail = () => {
     const e: Errors = {};
@@ -43,11 +56,8 @@ export default function ForgotPassword() {
     if (Object.keys(v).length === 0) {
       setLoading(true);
       try {
-        // Replace with your actual forgot password API call
-        // const response = await requestPasswordReset({ email });
-        // if (response.ok) setStep(2);
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        sessionStorage.setItem('forgotpass_email', email);
+        await forgotpassword(email)
         console.log("Password reset requested for:", email);
         setStep(2);
       } catch (error) {
@@ -66,11 +76,7 @@ export default function ForgotPassword() {
     if (Object.keys(v).length === 0) {
       setLoading(true);
       try {
-        // Replace with your actual password reset API call
-        // const response = await resetPassword({ email, token, newPassword });
-        // if (response.ok) navigate("/signin");
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await resetpassword(email, newPassword, token )
         console.log("Password reset:", { email, token, newPassword });
       } catch (error) {
         console.error("Failed to reset password:", error);
@@ -83,10 +89,7 @@ export default function ForgotPassword() {
   const handleResendToken = async () => {
     setResendLoading(true);
     try {
-      // Replace with your actual resend token API call
-      // const response = await resendResetToken({ email });
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await forgotpassword(email)
       console.log("Token resent to:", email);
     } catch (error) {
       console.error("Failed to resend token:", error);
