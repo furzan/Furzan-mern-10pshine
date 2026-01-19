@@ -30,12 +30,38 @@ export async function signin(data: Credentials) {
 
 export async function logout(email: string) {
   try {
-    const response = await axiosInstance.post('/auth/logout', { data: { email } });
+    const response = await axiosInstance.post('/auth/logout', { email: email } );
     console.log('logged out successfully:', response.data);
     return response.data;
 
   } catch (error) {
     console.error('Error logging out:', error);
+    throw error;
+  }
+}
+
+
+export async function forgotpassword(email: string) {
+  try {
+    const response = await axiosInstance.post('/auth/forgot-password', { email: email });
+    console.log('request for forgot password successfully sent:', response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('Error sending request for forgot password:', error);
+    throw error;
+  }
+}
+
+
+export async function resetpassword(email: string, new_password: string, token: string) {
+  try {
+    const response = await axiosInstance.post('/auth/forgot-password', { email: email, new_password: new_password, token: token});
+    console.log('request for reset password successfully sent:', response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('Error sending request for reset password:', error);
     throw error;
   }
 }

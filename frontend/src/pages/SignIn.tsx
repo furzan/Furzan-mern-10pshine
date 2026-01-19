@@ -1,18 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import AuthCard from "../components/AuthCard";
-import FormInput from "../components/FormInput";
 import { signin } from "../services/auth_Apis";
 import { useNavigate } from "react-router-dom";
+import "../styles/SignIn.css";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await signin({
@@ -25,55 +24,99 @@ export default function SignIn() {
         sessionStorage.setItem('user', JSON.stringify(response.user));
         navigate("/dashboard");
       }
+      
+      console.log("Sign in attempted with:", { email, password });
     } catch (error) {
       console.error("SignIn error:", error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <>
-      <div className="app-title-container">
-        <h1 className="app-title">Notes App</h1>
+    <div className="signin-container">
+      {/* Left Side - Image Section */}
+      <div className="signin-left">
+        <div className="brand-section">
+          <div className="logo-box">📝</div>
+          <h1>Notes App</h1>
+        </div>
+        
+        <div className="hero-content">
+          <h2 className="hero-title">
+            Organize your life,<br />
+            <span className="hero-subtitle-light">one note at a time</span>
+          </h2>
+          <p className="hero-subtitle">
+            Your ideas deserve a beautiful home. Create, organize, and access your notes from anywhere.
+          </p>
+        </div>
+
+        <div className="decorative-emoji">✍️</div>
       </div>
-      <AuthCard
-        title="Sign In"
-        footer={
-          <>
-            <small>
-              Don't have an account? <Link to="/signup">Sign Up</Link>
-            </small>
-          </>
-        }
-      >
-        <form onSubmit={handleSubmit} noValidate>
-          <FormInput
-            label="Email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <FormInput
-            label="Password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
 
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <Link to="#" className="small">
-              Forgot password?
-            </Link>
+      {/* Right Side - Form Section */}
+      <div className="signin-right">
+        <div className="form-container">
+          <div className="brand-logo">
+            <div className="logo-circle">📝</div>
+            <span className="brand-name">Notes App</span>
           </div>
 
-          <div className="d-grid">
-            <button type="submit" className="btn btn-primary">
-              Sign In
+          <div className="welcome-section">
+            <h1 className="welcome-title">Welcome back!</h1>
+            <p className="welcome-subtitle">Sign in to continue to your notes</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="signin-form">
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">Email</label>
+              <input
+                type="email"
+                id="email"
+                className="form-input"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <div className="password-header">
+                <label htmlFor="password" className="form-label">Password</label>
+                <Link to = '/forgotpass' className="forgot-link">
+                  Forgot password?
+                </Link>
+              </div>
+              <input
+                type="password"
+                id="password"
+                className="form-input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button 
+              type="submit"
+              className="submit-button"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
             </button>
+          </form>
+
+          <div className="signup-section">
+            <p className="signup-text">
+              Don't have an account?{' '}
+              <Link to = "/signup" className="signup-link">Sign Up</Link>
+            </p>
           </div>
-        </form>
-      </AuthCard>
-    </>
+        </div>
+      </div>
+    </div>
   );
 }
