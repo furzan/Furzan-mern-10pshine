@@ -3,6 +3,7 @@ const db = require('../../models')
 const jwt = require('jsonwebtoken')
 const sendEmail = require('../../utils/send_email');
 const crypto = require('crypto')
+const logger = require('../../utils/logger');
 
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -79,6 +80,8 @@ async function login(req, res) {
     if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email)) errors.push('A valid email is required')
     if (!password || typeof password !== 'string' || !password.length) errors.push('Password is required')
 
+    logger.info({ email }, 'Login attempt');
+
     if (errors.length) return res.status(400).json({ ok: false, errors })
 
     const normalizedEmail = email.trim().toLowerCase()
@@ -98,6 +101,8 @@ async function login(req, res) {
     }
     
     const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn: '1h' })
+
+    logger.info({ userId: user.id, email }, 'User logged in successfully');
     
     try {
       await user.update({ token: token })
@@ -122,7 +127,7 @@ async function login(req, res) {
     })
 
   } catch (err) {
-    console.error('Login error:', err);
+    logger.error({ err, email: req.body.email }, 'Login error');
     return res.status(500).json({ ok: false, message: 'Internal server error' })
   }
 }
