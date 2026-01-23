@@ -1,4 +1,5 @@
 const db = require('../../models')
+const logger = require('../../utils/logger');
 
 async function createNote(req, res) {
 	try {
@@ -13,9 +14,11 @@ async function createNote(req, res) {
 			content: content || null
 		})
 
+		logger.info({ userId, noteId: note.id }, 'Note created successfully');
+
 		return res.status(201).json({ ok: true, note })
 	} catch (err) {
-		console.error('createNote error:', err)
+		logger.error({ err, userId }, 'createNote error');
 		return res.status(500).json({ ok: false, message: 'Internal server error' })
 	}
 }
@@ -30,9 +33,11 @@ async function getNotes(req, res) {
 			order: [['created_at', 'DESC']]
 		})
 
+		logger.info({ userId, noteCount: notes.length }, 'Notes retrieved successfully');
+
 		return res.status(200).json({ ok: true, notes })
 	} catch (err) {
-		console.error('getNotes error:', err)
+		logger.error({ err, userId }, 'getNotes error');
 		return res.status(500).json({ ok: false, message: 'Internal server error' })
 	}
 }
@@ -54,9 +59,11 @@ async function updateNote(req, res) {
 			content: typeof content === 'undefined' ? note.content : content
 		})
 
+		logger.info({ userId, noteId }, 'Note updated successfully');
+
 		return res.status(200).json({ ok: true, note })
 	} catch (err) {
-		console.error('updateNote error:', err)
+		logger.error({ err, userId, noteId: req.params.id }, 'updateNote error');
 		return res.status(500).json({ ok: false, message: 'Internal server error' })
 	}
 }
@@ -74,9 +81,11 @@ async function deleteNote(req, res) {
 
 		await note.destroy()
 
+		logger.info({ userId, noteId }, 'Note deleted successfully');
+
 		return res.status(200).json({ ok: true, message: 'Note deleted' })
 	} catch (err) {
-		console.error('deleteNote error:', err)
+		logger.error({ err, userId, noteId: req.params.id }, 'deleteNote error');
 		return res.status(500).json({ ok: false, message: 'Internal server error' })
 	}
 }

@@ -3,6 +3,7 @@ const db = require('../../models')
 const jwt = require('jsonwebtoken')
 const sendEmail = require('../../utils/send_email');
 const crypto = require('crypto')
+const logger = require('../../utils/logger');
 
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -42,6 +43,7 @@ async function register(req, res) {
       password_hash
     });
 
+    logger.info({ userId: user.id, email: normalizedEmail }, 'User registered successfully');
    
     return res.status(201).json({
       ok: true,
@@ -60,7 +62,7 @@ async function register(req, res) {
       return res.status(409).json({ ok: false, message: 'Email already in use' })
     }
 
-    console.error('Register error:', err);
+    logger.error({ err, email: normalizedEmail }, 'Register error');
 
     return res.status(500).json({ ok: false, message: 'Internal server error' })
   }
@@ -78,6 +80,8 @@ async function login(req, res) {
     const errors = [];
     if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email)) errors.push('A valid email is required')
     if (!password || typeof password !== 'string' || !password.length) errors.push('Password is required')
+
+    logger.info({ email }, 'Login attempt');
 
     if (errors.length) return res.status(400).json({ ok: false, errors })
 
@@ -98,6 +102,8 @@ async function login(req, res) {
     }
     
     const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, { expiresIn: '1h' })
+
+    logger.info({ userId: user.id, email }, 'User logged in successfully');
     
     try {
       await user.update({ token: token })
@@ -122,7 +128,7 @@ async function login(req, res) {
     })
 
   } catch (err) {
-    console.error('Login error:', err);
+    logger.error({ err, email: req.body.email }, 'Login error');
     return res.status(500).json({ ok: false, message: 'Internal server error' })
   }
 }
@@ -154,13 +160,15 @@ async function logout(req, res) {
       console.warn('Error logging out:', updateErr && updateErr.message)
     }
 
+    logger.info({ userId: user.id, email: normalizedEmail }, 'User logged out successfully');
+
     return res.status(200).json({
       ok: true,
       message: 'Logged out',
     })
 
   } catch (err) {
-    console.error('Logout error:', err);
+    logger.error({ err, email: normalizedEmail }, 'Logout error');
     return res.status(500).json({ ok: false, message: 'Internal server error' })
   }
 }
@@ -262,10 +270,12 @@ async function requestPasswordReset(req, res) {
       return res.status(500).json({ ok: false, message: 'Failed to send reset email. Please try again later.' });
     }
 
+    logger.info({ userId: user.id, email: normalizedEmail }, 'Password reset requested successfully');
+
     return res.status(200).json({ ok: true, message: 'If that email exists, a reset link has been sent' });
 
   } catch (err) {
-    console.error('RequestPasswordReset error:', err);
+    logger.error({ err, email: normalizedEmail }, 'RequestPasswordReset error');
     return res.status(500).json({ ok: false, message: 'Internal server error' });
   }
 }
@@ -299,9 +309,11 @@ async function resetPassword(req, res) {
       return res.status(500).json({ ok: false, message: 'Failed to reset password' })
     }
 
+    logger.info({ userId: user.id, email: normalizedEmail }, 'Password reset successfully');
+
     return res.status(200).json({ ok: true, message: 'Password has been reset' })
   } catch (err) {
-    console.error('ResetPassword error:', err);
+    logger.error({ err, email: normalizedEmail }, 'ResetPassword error');
     return res.status(500).json({ ok: false, message: 'Internal server error' })
   }
 }
@@ -309,11 +321,13 @@ async function resetPassword(req, res) {
 // {expects req.user after middleware has processed the jwt token}
 const checkUserAuth = (req, res) => {
   if (req.user) {
+    logger.info({ userId: req.user.id, email: req.user.email }, 'User authentication check passed');
     return res.status(200).json({ 
       ok: true, 
       message: 'User is authenticated',
     });
   } else {
+    logger.info('User authentication check failed');
     return res.status(401).json({ 
       status: 'error', 
       message: 'Unauthorized: No user found' 

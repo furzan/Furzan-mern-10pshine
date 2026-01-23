@@ -3,6 +3,11 @@ const cors = require('cors');
 const db = require('./models')
 const auth_router = require('./modules/auth/auth_routes')
 const note_router = require('./modules/notes/note_routes')
+const logger = require('./utils/logger')
+const httpLogger = require('./middleware/http_logger_middleware')
+const { errorHandler, notFoundHandler } = require('./middleware/error_handler_middleware')
+
+
 
 
 const app = express()
@@ -16,9 +21,15 @@ app.use(cors({
 
 app.use(express.json())
 
+app.use(httpLogger);
+
 app.use('/api/auth', auth_router)
 
 app.use('/api/notes', note_router)
+
+app.use(notFoundHandler);
+
+app.use(errorHandler);
 
 const startserver = async()=>{
 
@@ -31,8 +42,18 @@ const startserver = async()=>{
 
         const PORT = process.env.PORT || 5000
         app.listen(PORT, () => {
-            console.log(`server is running on port ${PORT}`)
+            logger.info(`Server started on port ${PORT}`);
         })
+
+        process.on('unhandledRejection', (err) => {
+            logger.error({ err }, 'UNHANDLED REJECTION! Shutting down...');
+            process.exit(1);
+        });
+
+        process.on('uncaughtException', (err) => {
+            logger.error({ err }, 'UNCAUGHT EXCEPTION! Shutting down...');
+            process.exit(1);
+        });
 
     }
     catch (error) {
