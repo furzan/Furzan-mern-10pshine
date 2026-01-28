@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --timeout 10000 --exit --reporter ./test/test-reporter.js",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +24,16 @@
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
+    "chai": "^6.2.2",
+    "chai-http": "^5.1.2",
+    "cross-env": "^10.1.0",
+    "mocha": "^11.3.0",
     "nodemon": "^3.1.11",
-    "sequelize-cli": "^6.6.3"
+    "nyc": "^17.1.0",
+    "sequelize-cli": "^6.6.3",
+    "sinon": "^21.0.1",
+    "supertest": "^7.2.2"
   }
 }
