@@ -40,7 +40,7 @@ const startserver = async()=>{
 
         // Only sync database if not in test environment
         if (process.env.NODE_ENV !== 'test') {
-            await db.sequelize.sync({ alter: true })
+            await db.sequelize.sync()
         }
 
         const PORT = process.env.PORT || 5000
