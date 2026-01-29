@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { forgotpassword, resetpassword } from '../services/auth_Apis'
 import "../styles/ForgotPassword.css";
 
@@ -19,6 +19,7 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const { email_param } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (email_param ) {
@@ -76,7 +77,9 @@ export default function ForgotPassword() {
     if (Object.keys(v).length === 0) {
       setLoading(true);
       try {
-        await resetpassword(email, newPassword, token )
+        const response = await resetpassword(email, newPassword, token )
+        if (response.ok == true) navigate("/signin");
+
         console.log("Password reset:", { email, token, newPassword });
       } catch (error) {
         console.error("Failed to reset password:", error);
