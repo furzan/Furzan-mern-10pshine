@@ -38,7 +38,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
       toolbar: true,
       spellcheck: true,
       language: 'en',
-      toolbarButtonSize: 'medium',
+      toolbarButtonSize: 'small',
       toolbarAdaptive: true,
       showCharsCounter: false,
       showWordsCounter: false,
@@ -231,7 +231,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
             <JoditEditor
               ref={editor}
               value={content}
-              config={config}
+              config={config as any}
               onBlur={handleContentChange}
               onChange={() => {}} // Use onBlur for better performance
             />

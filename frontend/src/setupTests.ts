@@ -35,3 +35,14 @@ Object.defineProperty(window, 'sessionStorage', {
     }
   }
 };
+
+// Suppress console.log during tests to keep output clean
+let consoleLogSpy: jest.SpyInstance;
+
+beforeAll(() => {
+  consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  consoleLogSpy.mockRestore();
+});

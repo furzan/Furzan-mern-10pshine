@@ -9,10 +9,11 @@ import { logout } from '../services/auth_Apis';
 
 interface Note {
   id: number;
+  user_id: number;
   title: string;
   content: string;
-  lastModified: string;
-  color: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 type ViewMode = 'grid' | 'list';
@@ -104,7 +105,7 @@ const Dashboard: React.FC = () => {
     if (currentNoteId) {
       setNotes(prevNotes =>
         prevNotes.map(note =>
-          note.id === currentNoteId ? { ...note, ...savedNote } as Note : note
+          note.id === currentNoteId ? { ...note, ...savedNote, updatedAt: new Date().toISOString() } as Note : note
         )
       );
 
@@ -114,10 +115,11 @@ const Dashboard: React.FC = () => {
       // Add new note
       const newNote: Note = {
         id: savedNote.id || Date.now(),
+        user_id: userData.id,
         title: savedNote.title || 'Untitled',
         content: savedNote.content || '',
-        lastModified: savedNote.lastModified || new Date().toISOString(),
-        color: savedNote.color || '#ffffff'
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       setNotes(prevNotes => [newNote, ...prevNotes]);
 
@@ -141,7 +143,7 @@ const Dashboard: React.FC = () => {
       <header className="dashboard-header">
         <div className="header-left">
          
-          <div className="menu-icon" onClick={handleLogout} >
+          <div className="menu-icon" onClick={handleLogout} title="Logout" >
             <svg 
               viewBox="0 0 24 24" 
               width="20" 
