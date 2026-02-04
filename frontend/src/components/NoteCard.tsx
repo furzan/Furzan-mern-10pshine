@@ -63,10 +63,10 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick, onDelete }
     return colors[Math.floor(Math.random() * colors.length)];
   });
 
-  const stripHtml = (html: string): string => {
-    if (!html) return '';
-    return html.replace(/<[^>]*>?/gm, '');
-  };
+  // const stripHtml = (html: string): string => {
+  //   if (!html) return '';
+  //   return html.replace(/<[^>]*>?/gm, '');
+  // };
 
   return (
     <div 
