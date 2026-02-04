@@ -115,13 +115,11 @@ describe('Dashboard', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByText('Blank note'));
+      fireEvent.click(screen.getByText('Create Note'));
     });
 
-    // NoteEditor opens, but since it's modal, we need to test separately or mock
-    // For simplicity, assume handleCreateNote is called
-    // You can add assertions here if needed
+    
   });
 
-  // Add more tests as needed
+  
 });

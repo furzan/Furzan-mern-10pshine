@@ -26,7 +26,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
   // Fixed warm vibrant color
-  const noteColor = '#ffe7c9';
+  const noteColor = ' #f4f6fc';
 
   // Jodit editor configuration
   const config = useMemo(
