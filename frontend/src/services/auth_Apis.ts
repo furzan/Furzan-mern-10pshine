@@ -56,7 +56,7 @@ export async function forgotpassword(email: string) {
 
 export async function resetpassword(email: string, new_password: string, token: string) {
   try {
-    const response = await axiosInstance.post('/auth/forgot-password', { email: email, new_password: new_password, token: token});
+    const response = await axiosInstance.post('/auth/reset-password', { email: email, new_password: new_password, token: token});
     console.log('request for reset password successfully sent:', response.data);
     return response.data;
 

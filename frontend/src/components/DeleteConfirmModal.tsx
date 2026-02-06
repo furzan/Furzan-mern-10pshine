@@ -17,7 +17,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="delete-modal-overlay" onClick={onCancel}>
+    <div className="delete-modal-overlay" onClick={onCancel} data-testid="delete-modal-overlay">
       <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
         <div className="delete-modal-icon">
           <svg viewBox="0 0 24 24" width="48" height="48">

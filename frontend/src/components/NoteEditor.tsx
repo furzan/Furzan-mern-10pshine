@@ -26,7 +26,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
   // Fixed warm vibrant color
-  const noteColor = '#ffe7c9';
+  const noteColor = ' #f4f6fc';
 
   // Jodit editor configuration
   const config = useMemo(
@@ -38,50 +38,52 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
       toolbar: true,
       spellcheck: true,
       language: 'en',
-      toolbarButtonSize: 'medium',
-      toolbarAdaptive: true,
+      toolbarButtonSize: 'small',
+      toolbarAdaptive: false,
       showCharsCounter: false,
       showWordsCounter: false,
       showXPathInStatusbar: false,
       statusbar: false,
-      buttons: [
-        'bold',
-        'italic',
-        'underline',
-        'strikethrough',
-        '|',
-        'ul',
-        'ol',
-        '|',
-        'outdent',
-        'indent',
-        '|',
-        'fontsize',
-        'brush',
-        '|',
-        'align',
-        '|',
-        'link',
-        'table',
-        '|',
-        'undo',
-        'redo',
-        '|',
-        'hr',
-        'eraser'
-      ],
-      buttonsXS: [
-        'bold',
-        'italic',
-        '|',
-        'ul',
-        'ol',
-        '|',
-        'fontsize',
-        '|',
-        'undo',
-        'redo'
-      ]
+      // buttons: [
+      //   'bold',
+      //   'italic',
+      //   'underline',
+      //   'strikethrough',
+      //   '|',
+      //   'ul',
+      //   'ol',
+      //   '|',
+      //   'outdent',
+      //   'indent',
+      //   '|',
+      //   'fontsize',
+      //   'brush',
+      //   '|',
+      //   'align',
+      //   '|',
+      //   'link',
+      //   'table',
+      //   '|',
+      //   'undo',
+      //   'redo',
+      //   '|',
+      //   'hr',
+      //   'eraser',
+      //   '|',
+      //   'image'
+      // ],
+      // buttonsXS: [
+        // 'bold',
+        // 'italic',
+        // '|',
+        // 'ul',
+        // 'ol',
+        // '|',
+        // 'fontsize',
+        // '|',
+        // 'undo',
+        // 'redo'
+      // ]
     }),
     [noteId, noteData]
   );
@@ -231,7 +233,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
             <JoditEditor
               ref={editor}
               value={content}
-              config={config}
+              config={config as any}
               onBlur={handleContentChange}
               onChange={() => {}} // Use onBlur for better performance
             />
