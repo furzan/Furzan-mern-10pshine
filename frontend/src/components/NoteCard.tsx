@@ -63,10 +63,10 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick, onDelete }
     return colors[Math.floor(Math.random() * colors.length)];
   });
 
-  const stripHtml = (html: string): string => {
-    if (!html) return '';
-    return html.replace(/<[^>]*>?/gm, '');
-  };
+  // const stripHtml = (html: string): string => {
+  //   if (!html) return '';
+  //   return html.replace(/<[^>]*>?/gm, '');
+  // };
 
   return (
     <div 
@@ -84,7 +84,10 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick, onDelete }
               </svg>
             </button>
           </div>
-          <p className="note-preview">{stripHtml(note.content)}</p>
+          <div
+            className="note-preview"
+            dangerouslySetInnerHTML={{ __html: note.content }}
+          />
           <div className="note-footer">
             <span className="note-date">{formatDate(note.updatedAt)}</span>
           </div>
@@ -98,7 +101,10 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, viewMode, onClick, onDelete }
           </div>
           <div className="note-list-content">
             <h3 className="note-title">{note.title}</h3>
-            <p className="note-preview">{stripHtml(note.content)}</p>
+            <div
+              className="note-preview"
+              dangerouslySetInnerHTML={{ __html: note.content }}
+            />
           </div>
           <div className="note-list-meta">
             <span className="note-date">{formatDate(note.updatedAt)}</span>
