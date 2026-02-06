@@ -121,9 +121,10 @@ const Dashboard: React.FC = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
+      const res_createnote = await create_note({title: newNote.title, content: newNote.content});
+      
+      newNote.id = res_createnote.note.id
       setNotes(prevNotes => [newNote, ...prevNotes]);
-
-      await create_note({title: newNote.title, content: newNote.content});
 
     }
     setIsEditorOpen(false);
