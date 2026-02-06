@@ -39,7 +39,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
       spellcheck: true,
       language: 'en',
       toolbarButtonSize: 'small',
-      toolbarAdaptive: true,
+      toolbarAdaptive: false,
       showCharsCounter: false,
       showWordsCounter: false,
       showXPathInStatusbar: false,
@@ -71,16 +71,16 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ noteId, onClose, onSave, noteDa
         'eraser'
       ],
       buttonsXS: [
-        'bold',
-        'italic',
-        '|',
-        'ul',
-        'ol',
-        '|',
-        'fontsize',
-        '|',
-        'undo',
-        'redo'
+        // 'bold',
+        // 'italic',
+        // '|',
+        // 'ul',
+        // 'ol',
+        // '|',
+        // 'fontsize',
+        // '|',
+        // 'undo',
+        // 'redo'
       ]
     }),
     [noteId, noteData]
