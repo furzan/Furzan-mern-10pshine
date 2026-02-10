@@ -3,6 +3,8 @@
 A full‑stack notes application built with a **Node.js/Express + MySQL (Sequelize)** backend and a **React + TypeScript + Vite** frontend.  
 Users can sign up, sign in, reset passwords via email, and manage rich‑text notes from a protected dashboard.
 
+<img width="700" alt="Screenshot 2026-02-06 071435" src="https://github.com/user-attachments/assets/354b6cd0-3770-4f1c-960a-7a59f7427bd9" />
+
 ## Features
 
 - **User authentication**
@@ -125,6 +127,22 @@ npm test           # run once
 npm run test:watch # watch mode
 npm run test:coverage
 ```
+
+
+## SonarQube Quality Analysis (Backend + Frontend)
+
+<table>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/ffe723cf-2a16-44df-b975-374624030453" 
+           alt="Screenshot 1" width="500">
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/eee302e6-2881-4abd-b15a-7430a4f18413" 
+           alt="Screenshot 2" width="500">
+    </td>
+  </tr>
+</table>
 
 ---
 
