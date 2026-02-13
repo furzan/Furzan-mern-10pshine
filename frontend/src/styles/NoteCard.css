@@ -1,0 +1,239 @@
+/* Note Card Styles */
+
+/* Grid View */
+.note-card.grid {
+  background-color: #ffffff;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.note-card.grid:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: #dadce0;
+}
+
+.note-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.note-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #202124;
+  margin: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+}
+
+.note-menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  color: #5f6368;
+  opacity: 0;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.note-card:hover .note-menu-btn {
+  opacity: 1;
+}
+
+.note-menu-btn:hover {
+  background-color: rgba(95, 99, 104, 0.1);
+}
+
+.note-preview {
+  font-size: 14px;
+  color: #5f6368;
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.note-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.note-date {
+  font-size: 12px;
+  color: #5f6368;
+  font-weight: 400;
+}
+
+/* List View */
+.note-card.list {
+  background-color: #ffffff;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 72px;
+}
+
+.note-card.list:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #dadce0;
+  background-color: #fafafa;
+}
+
+.note-list-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.note-list-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.note-card.list .note-title {
+  font-size: 15px;
+  margin-bottom: 4px;
+  -webkit-line-clamp: 1;
+}
+
+.note-card.list .note-preview {
+  font-size: 13px;
+  -webkit-line-clamp: 1;
+  color: #80868b;
+}
+
+.note-list-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.note-card.list .note-date {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.note-card.list .note-menu-btn {
+  opacity: 0;
+}
+
+.note-card.list:hover .note-menu-btn {
+  opacity: 1;
+}
+
+/* Color Variations */
+.note-card.grid[style*="background-color"] {
+  border-color: transparent;
+}
+
+.note-card.grid[style*="background-color"]:hover {
+  filter: brightness(0.98);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.note-card {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .note-card.grid {
+    padding: 14px;
+    min-height: 180px;
+  }
+
+  .note-title {
+    font-size: 15px;
+  }
+
+  .note-preview {
+    font-size: 13px;
+    -webkit-line-clamp: 3;
+  }
+
+  .note-card.list {
+    padding: 14px 16px;
+  }
+
+  .note-list-meta {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .note-card.grid {
+    padding: 12px;
+    min-height: 160px;
+  }
+
+  .note-title {
+    font-size: 14px;
+  }
+
+  .note-preview {
+    font-size: 12px;
+  }
+
+  .note-card.list {
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+
+  .note-list-icon {
+    display: none;
+  }
+
+  .note-list-meta {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+}
